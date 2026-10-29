@@ -1,0 +1,1060 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>漫游小炊</title>
+
+<style>
+:root{
+  --green:#35c759;
+  --blue:#147ef5;
+  --bg:#f2f2f7;
+  --line:#d9d9de;
+  --text:#171717;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  min-height:100%;
+  background:#1c1c1e;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
+  "Microsoft YaHei",sans-serif;
+  color:var(--text);
+}
+button{font:inherit;cursor:pointer}
+button:active{transform:scale(.95)}
+.phone{
+  width:390px;
+  height:844px;
+  max-width:100vw;
+  max-height:100vh;
+  margin:auto;
+  position:relative;
+  overflow:hidden;
+  background:#f2f2f7;
+  border:7px solid #111;
+  border-radius:46px;
+  box-shadow:0 20px 80px #0009;
+}
+.screen{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  position:relative;
+  border-radius:38px;
+}
+.hidden{display:none!important}
+
+/* Dynamic Island */
+
+.island{
+  width:112px;
+  height:30px;
+  position:absolute;
+  top:8px;
+  left:50%;
+  z-index:100;
+  transform:translateX(-50%);
+  border-radius:20px;
+  background:#000;
+}
+
+/* 状态栏 */
+
+.status{
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:20;
+  width:100%;
+  height:42px;
+  padding:12px 20px 0;
+  display:flex;
+  justify-content:space-between;
+  color:#fff;
+  font-size:12px;
+  font-weight:600;
+  text-shadow:0 1px 4px #0008;
+}
+
+/* 锁屏 */
+
+.lock{
+  width:100%;
+  height:100%;
+  position:relative;
+  color:#fff;
+  text-align:center;
+  background:
+    linear-gradient(#0004,#0004),
+    url("images/手机壁纸.jpg") center/cover;
+}
+.lock-time{
+  padding-top:112px;
+  font-size:67px;
+  line-height:1;
+  font-weight:300;
+  letter-spacing:-4px;
+}
+.lock-date{
+  margin-top:13px;
+  font-size:17px;
+}
+.lock-notice{
+  width:calc(100% - 32px);
+  margin:42px auto 0;
+  padding:14px 16px;
+  border:1px solid #ffffff45;
+  border-radius:18px;
+  background:#ffffff25;
+  backdrop-filter:blur(12px);
+  text-align:left;
+}
+.lock-notice b{display:block;font-size:13px}
+.lock-notice span{display:block;margin-top:5px;font-size:13px}
+.unlock-tip{
+  position:absolute;
+  bottom:46px;
+  width:100%;
+  font-size:13px;
+}
+
+/* 密码页 */
+
+.passcode{
+  width:100%;
+  height:100%;
+  position:relative;
+  padding-top:105px;
+  color:#fff;
+  text-align:center;
+  background:#202124;
+}
+.passcode h2{margin:0 0 9px;font-size:21px;font-weight:500}
+.passcode p{margin:0 0 24px;color:#aaa;font-size:13px}
+.dots{
+  height:25px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+}
+.dot{
+  width:10px;
+  height:10px;
+  border:1px solid #fff;
+  border-radius:50%;
+}
+.dot.on{background:#fff}
+.pass-error{
+  height:22px;
+  margin-top:8px;
+  color:#ff6961;
+  font-size:13px;
+}
+.keypad{
+  width:270px;
+  margin:22px auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:13px;
+}
+.key{
+  width:72px;
+  height:72px;
+  border:0;
+  border-radius:50%;
+  background:#39393d;
+  color:#fff;
+  font-size:27px;
+}
+.key small{
+  display:block;
+  margin-top:-3px;
+  font-size:9px;
+  letter-spacing:1px;
+}
+
+/* 主屏 */
+
+.home{
+  width:100%;
+  height:100%;
+  padding:79px 20px 92px;
+  background:
+    linear-gradient(#0002,#0002),
+    url("images/手机壁纸.jpg") center/cover;
+}
+.home-title{
+  margin-bottom:22px;
+  color:#fff;
+  text-align:center;
+  font-size:15px;
+  text-shadow:0 1px 4px #000;
+}
+.app-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px 13px;
+}
+.app{
+  border:0;
+  padding:0;
+  background:none;
+  color:#fff;
+  text-align:center;
+  text-shadow:0 1px 4px #000;
+  font-size:11px;
+}
+.app-icon{
+  width:56px;
+  height:56px;
+  margin:0 auto 5px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  font-size:28px;
+  box-shadow:0 3px 8px #0006;
+}
+.icon-wechat{background:#35c759}
+.icon-gallery{background:linear-gradient(135deg,#ffcc00,#ff375f,#5856d6)}
+.icon-notes{background:#fff;color:#222}
+.icon-calendar{background:#fff;color:#e33}
+.icon-map{background:#fff;color:#1678e8}
+.icon-music{background:linear-gradient(135deg,#ff2d55,#af52de);color:#fff}
+.icon-weather{background:linear-gradient(#49b8ff,#1976d2)}
+.icon-clock{background:#242426}
+.badge{
+  position:absolute;
+  margin:-5px 0 0 -18px;
+  min-width:18px;
+  padding:2px 5px;
+  border-radius:12px;
+  background:#ff3b30;
+  color:#fff;
+  font-size:10px;
+  text-shadow:none;
+}
+.dock{
+  position:absolute;
+  left:14px;
+  right:14px;
+  bottom:12px;
+  height:76px;
+  padding:10px 20px;
+  display:flex;
+  justify-content:space-between;
+  border-radius:25px;
+  background:#ffffff45;
+  backdrop-filter:blur(18px);
+}
+.dock .app-icon{width:52px;height:52px}
+
+/* App 通用 */
+
+.app{
+  width:100%;
+  height:100%;
+  padding-top:42px;
+  background:var(--bg);
+}
+.app-header{
+  height:52px;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  font-weight:700;
+}
+.back{
+  padding:0;
+  border:0;
+  background:none;
+  color:var(--blue);
+  font-size:29px;
+  line-height:20px;
+}
+.app-content{
+  height:calc(100% - 52px);
+  overflow-y:auto;
+}
+
+/* 微信 */
+
+.chat-list{padding-top:8px}
+.chat-row{
+  height:78px;
+  padding:11px 16px;
+  display:flex;
+  gap:12px;
+  border-bottom:1px solid #e3e3e8;
+  background:#fff;
+}
+.avatar{
+  width:55px;
+  height:55px;
+  flex:0 0 55px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#d8d8dc;
+  color:#666;
+  font-size:11px;
+  text-align:center;
+}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.chat-row b{display:block;margin:4px 0 7px}
+.chat-row span{color:#777;font-size:13px}
+.chat-window{
+  width:100%;
+  height:calc(100% - 52px);
+  overflow-y:auto;
+  padding:12px;
+  background:#e8eee7;
+}
+.chat-time{
+  margin:8px 0;
+  color:#777;
+  text-align:center;
+  font-size:10px;
+}
+.bubble{
+  max-width:78%;
+  margin:8px 0;
+  padding:10px 13px;
+  border-radius:15px;
+  background:#fff;
+  font-size:14px;
+  line-height:1.55;
+  animation:appear .3s ease;
+}
+.bubble.me{
+  margin-left:auto;
+  background:#a9e88f;
+}
+.typing{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:15px;
+  background:#fff;
+  color:#888;
+  font-size:12px;
+}
+@keyframes appear{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* 相册 */
+
+.gallery{
+  padding:16px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.photo{
+  height:142px;
+  overflow:hidden;
+  position:relative;
+  border-radius:12px;
+  background:#d9d9de;
+}
+.photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.photo-label{
+  position:absolute;
+  right:6px;
+  bottom:5px;
+  padding:3px 6px;
+  border-radius:8px;
+  background:#0007;
+  color:#fff;
+  font-size:10px;
+}
+.viewer{
+  position:absolute;
+  inset:0;
+  z-index:80;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#000e;
+}
+.viewer img{
+  max-width:94%;
+  max-height:78%;
+  object-fit:contain;
+}
+.viewer-close{
+  position:absolute;
+  top:54px;
+  right:20px;
+  border:0;
+  background:none;
+  color:#fff;
+  font-size:30px;
+}
+
+/* 备忘录、日历、地图、天气 */
+
+.card{
+  margin:16px;
+  padding:17px;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 2px 8px #0001;
+  line-height:1.8;
+  white-space:pre-line;
+}
+.yellow{background:#fff8c9}
+.map{
+  height:530px;
+  margin:16px;
+  padding-top:175px;
+  border-radius:16px;
+  background:
+    linear-gradient(35deg,#c9d7c2 12%,transparent 12%),
+    linear-gradient(-35deg,#d8c9ae 12%,transparent 12%),
+    #e3dfc9;
+  background-size:80px 80px;
+  color:#50594d;
+  text-align:center;
+  line-height:2.2;
+}
+.pin{font-size:23px;color:#d33}
+
+/* 音乐 */
+
+.music-page{
+  min-height:100%;
+  padding:26px 20px;
+  color:#fff;
+  text-align:center;
+  background:linear-gradient(145deg,#1c1c1e,#6b255c);
+}
+.cover{
+  width:220px;
+  height:220px;
+  margin:15px auto 22px;
+  display:grid;
+  place-items:center;
+  border-radius:18px;
+  background:linear-gradient(135deg,#ff375f,#af52de);
+  box-shadow:0 12px 30px #0008;
+  font-size:70px;
+}
+.music-page h2{margin:0;font-size:22px}
+.music-page p{margin:8px;color:#ddd}
+.progress{
+  height:4px;
+  margin:28px 8px 8px;
+  border-radius:3px;
+  background:#ffffff40;
+}
+.progress span{
+  display:block;
+  width:31%;
+  height:100%;
+  border-radius:3px;
+  background:#fff;
+}
+.music-time{
+  display:flex;
+  justify-content:space-between;
+  color:#ccc;
+  font-size:11px;
+}
+.music-controls{
+  margin-top:25px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:35px;
+}
+.music-controls button{
+  border:0;
+  background:none;
+  color:#fff;
+  font-size:25px;
+}
+.music-controls .play{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:#fff;
+  color:#222;
+}
+
+/* Toast */
+
+.toast{
+  position:absolute;
+  left:50%;
+  bottom:102px;
+  z-index:90;
+  min-width:220px;
+  padding:12px 16px;
+  transform:translateX(-50%);
+  border-radius:14px;
+  background:#222d;
+  color:#fff;
+  text-align:center;
+  font-size:13px;
+  animation:appear .25s;
+}
+
+@media(max-width:500px){
+  .phone{
+    width:100vw;
+    height:100dvh;
+    border:0;
+    border-radius:0;
+  }
+  .screen{border-radius:0}
+}
+</style>
+</head>
+
+<body>
+<div class="phone">
+<div class="screen">
+
+<div class="island"></div>
+
+<!-- 锁屏 -->
+<section id="lock" class="lock">
+  <div class="status">
+    <span>2026年</span>
+    <span>▮▮▮ 100%</span>
+  </div>
+  <div class="lock-time">09:41</div>
+  <div class="lock-date">星期四 · 10月29日</div>
+  <div class="lock-notice">
+    <b>微信 · 新消息</b>
+    <span>娟：这事儿得慢慢撮合。</span>
+  </div>
+  <div class="unlock-tip">点击屏幕输入密码</div>
+</section>
+
+<!-- 密码 -->
+<section id="passcode" class="passcode hidden">
+  <h2>输入密码</h2>
+  <p>小炊的手机</p>
+  <div id="dots" class="dots">
+    <i class="dot"></i><i class="dot"></i>
+    <i class="dot"></i><i class="dot"></i>
+  </div>
+  <div id="passError" class="pass-error"></div>
+
+  <div class="keypad">
+    <button class="key" onclick="pressKey('1')">1</button>
+    <button class="key" onclick="pressKey('2')">2<small>ABC</small></button>
+    <button class="key" onclick="pressKey('3')">3<small>DEF</small></button>
+    <button class="key" onclick="pressKey('4')">4<small>GHI</small></button>
+    <button class="key" onclick="pressKey('5')">5<small>JKL</small></button>
+    <button class="key" onclick="pressKey('6')">6<small>MNO</small></button>
+    <button class="key" onclick="pressKey('7')">7<small>PQRS</small></button>
+    <button class="key" onclick="pressKey('8')">8<small>TUV</small></button>
+    <button class="key" onclick="pressKey('9')">9<small>WXYZ</small></button>
+    <button class="key" onclick="clearPass()">⌫</button>
+    <button class="key" onclick="pressKey('0')">0</button>
+    <button class="key" onclick="clearPass()">清除</button>
+  </div>
+</section>
+
+<!-- 主屏 -->
+<section id="home" class="home hidden">
+  <div class="status">
+    <span>09:41</span><span>▮▮▮ 100%</span>
+  </div>
+  <div class="home-title">小炊的手机</div>
+
+  <div class="app-grid">
+    <button class="app" onclick="openApp('wechat')">
+      <div class="app-icon icon-wechat">💬<b class="badge">3</b></div>微信
+    </button>
+    <button class="app" onclick="openApp('gallery')">
+      <div class="app-icon icon-gallery">🌈</div>照片
+    </button>
+    <button class="app" onclick="openApp('notes')">
+      <div class="app-icon icon-notes">📝</div>备忘录
+    </button>
+    <button class="app" onclick="openApp('calendar')">
+      <div class="app-icon icon-calendar">📅</div>日历
+    </button>
+    <button class="app" onclick="openApp('map')">
+      <div class="app-icon icon-map">🗺️</div>地图
+    </button>
+    <button class="app" onclick="openApp('music')">
+      <div class="app-icon icon-music">♫</div>音乐
+    </button>
+    <button class="app" onclick="openApp('weather')">
+      <div class="app-icon icon-weather">☁️</div>天气
+    </button>
+    <button class="app" onclick="showToast('录音：今天是穿越后的第三天')">
+      <div class="app-icon icon-clock">🎙️</div>录音
+    </button>
+  </div>
+
+  <div class="dock">
+    <button class="app" onclick="showToast('电话功能暂未接入')">
+      <div class="app-icon icon-wechat">☎️</div>
+    </button>
+    <button class="app" onclick="openApp('wechat')">
+      <div class="app-icon icon-wechat">💬</div>
+    </button>
+    <button class="app" onclick="openApp('gallery')">
+      <div class="app-icon icon-gallery">🌈</div>
+    </button>
+    <button class="app" onclick="openApp('music')">
+      <div class="app-icon icon-music">♫</div>
+    </button>
+  </div>
+</section>
+
+<!-- 微信列表 -->
+<section id="wechat" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="goHome()">‹</button>
+    <span>微信</span><span></span>
+  </div>
+  <div class="app-content chat-list">
+
+    <div class="chat-row" onclick="openChat('pipi')">
+      <div class="avatar">
+        <img src="images/皮皮的头像.jpg" alt="皮皮"
+             onerror="placeholder(this,'皮皮')">
+      </div>
+      <div><b>皮皮</b><span>你们酒店今天忙不忙？</span></div>
+    </div>
+
+    <div class="chat-row" onclick="openChat('zy')">
+      <div class="avatar">
+        <img src="images/zy的头像.jpg" alt="zy"
+             onerror="placeholder(this,'zy')">
+      </div>
+      <div><b>zy</b><span>小炊，你怎么总知道这些？</span></div>
+    </div>
+
+    <div class="chat-row" onclick="openChat('juan')">
+      <div class="avatar">
+        <img src="images/娟的头像.jpg" alt="娟"
+             onerror="placeholder(this,'娟')">
+      </div>
+      <div><b>娟</b><span>明天安排一个自然的偶遇。</span></div>
+    </div>
+
+    <div class="chat-row" onclick="openChat('manager')">
+      <div class="avatar">经理<br>儿子</div>
+      <div><b>酒店经理的儿子</b><span>zy，今晚一起吃个饭吧。</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 聊天 -->
+<section id="chat" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="openApp('wechat')">‹</button>
+    <span id="chatTitle"></span><span></span>
+  </div>
+  <div id="chatWindow" class="chat-window"></div>
+</section>
+
+<!-- 相册 -->
+<section id="gallery" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="goHome()">‹</button>
+    <span>照片</span><span>选择</span>
+  </div>
+
+  <div class="app-content gallery">
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/1.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片1')">
+      <span class="photo-label">旧照片</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/2.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片2')">
+      <span class="photo-label">记忆</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/3.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片3')">
+      <span class="photo-label">小炊</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/4.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片4')">
+      <span class="photo-label">家人</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/5.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片5')">
+      <span class="photo-label">小时候</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/6.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片6')">
+      <span class="photo-label">旧相册</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/7.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片7')">
+      <span class="photo-label">一家人</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/8.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片8')">
+      <span class="photo-label">童年</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/主角相册照片/9.jpg" alt="小炊的旧照片"
+           onerror="placeholder(this,'照片9')">
+      <span class="photo-label">重要线索</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/酒店.jpg" alt="2002年重庆酒店"
+           onerror="placeholder(this,'酒店照片')">
+      <span class="photo-label">富力酒店</span>
+    </div>
+    <div class="photo" onclick="viewPhoto(this)">
+      <img src="images/摩托车.jpg" alt="2002年摩托车"
+           onerror="placeholder(this,'摩托车照片')">
+      <span class="photo-label">摩托车</span>
+    </div>
+  </div>
+</section>
+
+<!-- 备忘录 -->
+<section id="notes" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="goHome()">‹</button>
+    <span>备忘录</span><span>编辑</span>
+  </div>
+  <div class="app-content">
+    <div class="card yellow">《穿越记录》
+
+今天确认：
+
+一、这里是2002年的重庆。
+二、我偶然穿越了。
+三、手机居然还能用。
+四、我现在在富力酒店。
+
+目前认识的人：
+
+皮皮：1974年生，卖摩托。
+zy：1978年生，在富力酒店工作。
+娟：1975年生，性格直爽耿直。
+
+重要提醒：
+
+不能叫他们爸爸妈妈。
+他们现在还不认识。
+他们必须在一起。
+
+——小炊</div>
+
+    <div class="card yellow">《撮合行动计划》
+
+一、皮皮只会问“吃饭没”，需要培训。
+二、娟负责安排自然偶遇。
+三、观察酒店经理的儿子。
+四、不能暴露自己来自未来。
+五、不能把事情搞得太明显。
+
+当前评价：
+
+两个人都很迟钝。
+但问题不大。
+我和娟姐应该能救。</div>
+  </div>
+</section>
+
+<!-- 日历 -->
+<section id="calendar" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="goHome()">‹</button>
+    <span>日历</span><span>2002</span>
+  </div>
+  <div class="app-content">
+    <div class="card">2002年10月
+
+16日　富力酒店早班
+17日　皮皮到酒店附近
+18日　娟安排三人吃饭
+19日　经理的儿子约zy
+20日　观察关系进展
+
+备注：
+
+如果皮皮继续只会问“吃饭没”，
+就让娟姐直接把他推过去。</div>
+  </div>
+</section>
+
+<!-- 地图 -->
+<section id="map" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="goHome()">‹</button>
+    <span>地图</span><span></span>
+  </div>
+  <div class="app-content">
+    <div class="map">
+      <span class="pin">📍</span><br>
+      富力酒店<br>
+      <span class="pin">📍</span><br>
+      皮皮的摩托车店<br>
+      <span class="pin">📍</span><br>
+      娟安排的偶遇地点
+    </div>
+  </div>
+</section>
+
+<!-- 音乐 -->
+<section id="music" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="goHome()">‹</button>
+    <span>音乐</span><span>•••</span>
+  </div>
+
+  <div class="app-content music-page">
+    <div class="cover">♫</div>
+    <h2>反方向的钟</h2>
+    <p>周杰伦</p>
+    <p>专辑：Initial J</p>
+
+    <div class="progress"><span></span></div>
+    <div class="music-time">
+      <span>00:00</span><span>04:20</span>
+    </div>
+
+    <div class="music-controls">
+      <button>↶</button>
+      <button class="play" onclick="toggleMusic()">▶</button>
+      <button>↷</button>
+    </div>
+
+    <div class="card" style="margin-top:35px;color:#222;text-align:left">
+      这首歌的名字让小炊想起了一件事：
+
+      如果时间真的能反方向走，
+      那么她是不是也能回到2026年？
+
+      但在回去之前，
+      还有两个人必须先遇见。
+    </div>
+  </div>
+</section>
+
+<!-- 天气 -->
+<section id="weather" class="app hidden">
+  <div class="app-header">
+    <button class="back" onclick="goHome()">‹</button>
+    <span>天气</span><span></span>
+  </div>
+  <div class="app-content">
+    <div class="card" style="background:linear-gradient(#4bbcff,#176bc4);color:#fff">
+      重庆 · 多云
+
+      23°
+      有风
+
+      适合下班。
+      适合偶遇。
+      也适合两个还不认识的人，
+      开始慢慢注意到彼此。
+    </div>
+  </div>
+</section>
+
+<!-- 图片查看器 -->
+<div id="viewer" class="viewer hidden" onclick="closeViewer()">
+  <button class="viewer-close">×</button>
+  <img id="viewerImage" src="" alt="放大图片">
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+</div>
+</div>
+
+<script>
+const chats={
+  pipi:{
+    title:"皮皮",
+    time:"2002年10月16日 09:18",
+    lines:[
+      ["other","你们酒店今天忙不忙？"],
+      ["me","还行。你怎么突然关心酒店了？"],
+      ["other","我刚好要从那边过。"],
+      ["me","是“刚好”，还是娟姐安排的？"],
+      ["other","小孩子不要管这么多。"],
+      ["me","我可不是普通小孩子。"],
+      ["other","那你说，我该怎么跟zy说话？"],
+      ["me","先不要问她吃没吃饭。"],
+      ["other","那问什么？"],
+      ["me","问她下班以后有没有空。"]
+    ]
+  },
+  zy:{
+    title:"zy",
+    time:"2002年10月16日 11:42",
+    lines:[
+      ["other","小炊，你怎么总知道这些？"],
+      ["me","我这个人最大的优点就是观察力强。"],
+      ["other","你和娟最近是不是在商量什么？"],
+      ["me","没有，绝对没有。"],
+      ["other","你这句话听起来就很有问题。"],
+      ["me","那可能是我表达能力太强了。"],
+      ["other","经理的儿子又来找我了。"],
+      ["me","你不喜欢他，就不要勉强自己。"],
+      ["other","我知道。只是有点烦。"]
+    ]
+  },
+  juan:{
+    title:"娟",
+    time:"2002年10月16日 12:06",
+    lines:[
+      ["other","皮皮明天会来酒店附近。"],
+      ["me","安排得这么明显，他能看出来吗？"],
+      ["other","他要是看得出来，就不会到现在还没开窍。"],
+      ["me","zy那边呢？"],
+      ["other","经理的儿子又约她了。"],
+      ["me","那我们要加快进度。"],
+      ["other","慢慢来。人得自己愿意，不能硬撮合。"],
+      ["me","娟姐，你真的是直爽得很有道理。"],
+      ["other","少贫。明天记得帮忙。"]
+    ]
+  },
+  manager:{
+    title:"酒店经理的儿子",
+    time:"2002年10月16日 19:30",
+    lines:[
+      ["other","zy，今晚一起吃个饭吧。"],
+      ["other","我让人给你留了位置。"],
+      ["me","她已经说过不方便了。"],
+      ["other","小炊，这里没有你说话的份。"],
+      ["me","那你也别替别人做决定。"],
+      ["other","你们酒店的人都这么多管闲事吗？"],
+      ["me","我们只是比较关心同事。"]
+    ]
+  }
+};
+
+let pass="";
+let playing=false;
+
+document.getElementById("lock").onclick=function(){
+  document.getElementById("lock").classList.add("hidden");
+  document.getElementById("passcode").classList.remove("hidden");
+};
+
+function pressKey(key){
+  if(pass.length>=4)return;
+  pass+=key;
+  updateDots();
+
+  if(pass.length===4){
+    setTimeout(function(){
+      if(pass==="2714"){
+        document.getElementById("passcode").classList.add("hidden");
+        document.getElementById("home").classList.remove("hidden");
+        showToast("已解锁");
+      }else{
+        document.getElementById("passError").textContent="密码错误，再试一次";
+        pass="";
+        updateDots();
+      }
+    },180);
+  }
+}
+
+function clearPass(){
+  pass="";
+  document.getElementById("passError").textContent="";
+  updateDots();
+}
+
+function updateDots(){
+  document.querySelectorAll(".dot").forEach(function(dot,index){
+    dot.classList.toggle("on",index<pass.length);
+  });
+}
+
+function hideSections(){
+  document.querySelectorAll(".screen>section").forEach(function(section){
+    section.classList.add("hidden");
+  });
+}
+
+function openApp(id){
+  hideSections();
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function goHome(){
+  openApp("home");
+}
+
+function placeholder(img,name){
+  img.style.display="none";
+  img.parentNode.insertAdjacentText("beforeend","["+name+"占位]");
+}
+
+function openChat(id){
+  const data=chats[id];
+  openApp("chat");
+  document.getElementById("chatTitle").textContent=data.title;
+
+  const box=document.getElementById("chatWindow");
+  box.innerHTML='<div class="chat-time">'+data.time+"</div>";
+
+  data.lines.forEach(function(line,index){
+    setTimeout(function(){
+      const bubble=document.createElement("div");
+      bubble.className="bubble "+(line[0]==="me"?"me":"");
+      bubble.textContent=line[1];
+      box.appendChild(bubble);
+      box.scrollTop=box.scrollHeight;
+    },index*650);
+  });
+}
+
+function viewPhoto(wrapper){
+  const img=wrapper.querySelector("img");
+  if(!img || img.style.display==="none")return;
+  document.getElementById("viewerImage").src=img.src;
+  document.getElementById("viewer").classList.remove("hidden");
+}
+
+function closeViewer(){
+  document.getElementById("viewer").classList.add("hidden");
+}
+
+function showToast(text){
+  const toast=document.getElementById("toast");
+  toast.textContent=text;
+  toast.classList.remove("hidden");
+  setTimeout(function(){
+    toast.classList.add("hidden");
+  },2200);
+}
+
+function toggleMusic(){
+  playing=!playing;
+  document.querySelector(".music-controls .play").textContent=playing?"Ⅱ":"▶";
+  showToast(playing?"正在播放：反方向的钟":"播放已暂停");
+}
+</script>
+</body>
+</html>
