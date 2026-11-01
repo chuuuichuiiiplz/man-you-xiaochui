@@ -519,6 +519,19 @@ button:active{transform:scale(.95)}
   }
   .screen{border-radius:0}
 }
+
+/* 完善版覆盖：清晰 iOS 字体与图标 */
+html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.status,.home-title,.app,.lock,.lock-date,.lock-notice,.unlock-tip{ text-shadow:none!important }
+.app-icon{font-family:"Apple Symbols","SF Symbols",-apple-system,sans-serif;font-weight:600}
+.ios-glyph{font-size:24px;line-height:1}
+.call-list,.record-list{padding:16px}
+.call-item,.record-item{padding:14px 4px;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;background:#fff}
+.dial-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:22px}
+.dial-key{height:58px;border:0;border-radius:50%;background:#e5e5ea;font-size:23px}
+.call-action{margin:10px 22px;width:calc(100% - 44px);height:48px;border:0;border-radius:24px;background:#34c759;color:#fff;font-weight:600}
+.recorder{margin:20px;padding:18px;border-radius:18px;background:#fff;text-align:center}
+.record-button{width:82px;height:82px;border:0;border-radius:50%;background:#ff3b30;color:#fff;font-size:14px}
 </style>
 </head>
 
@@ -597,6 +610,10 @@ button:active{transform:scale(.95)}
     </button>
     <button class="app" onclick="openApp('weather')">
       <div class="app-icon icon-weather">☁️</div>天气
+    </button>
+    <button class="app" onclick="openApp('phone')"><div class="app-icon icon-wechat"><span class="ios-glyph">☎</span></div>电话</button>
+    <button class="app" onclick="openApp('recorder')">
+      <div class="app-icon icon-clock"><span class="ios-glyph">●</span></div>录音
     </button>
     <button class="app" onclick="showToast('录音：今天是穿越后的第三天')">
       <div class="app-icon icon-clock">🎙️</div>录音
@@ -877,6 +894,33 @@ zy：1978年生，在富力酒店工作。
   </div>
 </section>
 
+<!-- 电话 -->
+<section id="phone" class="app hidden">
+ <div class="app-header"><button class="back" onclick="goHome()">‹</button><span>电话</span><span></span></div>
+ <div class="app-content">
+  <div class="card"><b>最近通话</b></div>
+  <div class="call-list">
+   <div class="call-item"><span>娟（未接来电）</span><span>09:12</span></div>
+   <div class="call-item"><span>皮皮</span><span>昨天</span></div>
+   <div class="call-item"><span>zy</span><span>前天</span></div>
+  </div>
+  <button class="call-action" onclick="startCall()">☎ 呼叫娟</button>
+  <div class="dial-pad">
+   <button class="dial-key">1</button><button class="dial-key">2</button><button class="dial-key">3</button>
+   <button class="dial-key">4</button><button class="dial-key">5</button><button class="dial-key">6</button>
+   <button class="dial-key">7</button><button class="dial-key">8</button><button class="dial-key">9</button>
+  </div>
+ </div>
+</section>
+<!-- 录音 -->
+<section id="recorder" class="app hidden">
+ <div class="app-header"><button class="back" onclick="goHome()">‹</button><span>录音</span><span></span></div>
+ <div class="app-content">
+  <div class="recorder"><p id="recordStatus">录音机</p><button class="record-button" onclick="recordClue()">录音</button></div>
+  <div class="record-list"><div class="record-item"><span>穿越后的第三天</span><span>00:18</span></div><div class="record-item"><span>娟的撮合计划</span><span>00:42</span></div></div>
+ </div>
+</section>
+
 <!-- 图片查看器 -->
 <div id="viewer" class="viewer hidden" onclick="closeViewer()">
   <button class="viewer-close">×</button>
@@ -1015,19 +1059,19 @@ function openChat(id){
   const data=chats[id];
   openApp("chat");
   document.getElementById("chatTitle").textContent=data.title;
-
   const box=document.getElementById("chatWindow");
-  box.innerHTML='<div class="chat-time">'+data.time+"</div>";
-
+  const key="chat_seen_"+id;
+  const seen=localStorage.getItem(key)==="1";
+  box.innerHTML='<div class="chat-time">'+data.time+'</div>';
   data.lines.forEach(function(line,index){
-    setTimeout(function(){
+    function add(){
       const bubble=document.createElement("div");
       bubble.className="bubble "+(line[0]==="me"?"me":"");
-      bubble.textContent=line[1];
-      box.appendChild(bubble);
-      box.scrollTop=box.scrollHeight;
-    },index*650);
+      bubble.textContent=line[1]; box.appendChild(bubble); box.scrollTop=box.scrollHeight;
+    }
+    if(seen){ add(); } else { setTimeout(add,index*650); }
   });
+  localStorage.setItem(key,"1");
 }
 
 function viewPhoto(wrapper){
@@ -1054,6 +1098,20 @@ function toggleMusic(){
   playing=!playing;
   document.querySelector(".music-controls .play").textContent=playing?"Ⅱ":"▶";
   showToast(playing?"正在播放：反方向的钟":"播放已暂停");
+}
+
+function startCall(){
+  showToast("正在呼叫娟……");
+  setTimeout(function(){
+    showToast("娟：明天让皮皮到酒店来一趟");
+    localStorage.setItem("call_juan_done","1");
+    document.getElementById("recordStatus").textContent="新录音：娟的撮合计划";
+  },1200);
+}
+function recordClue(){
+  localStorage.setItem("record_clue_done","1");
+  document.getElementById("recordStatus").textContent="正在录音……已保存：娟的撮合计划";
+  showToast("录音已保存");
 }
 </script>
 </body>
