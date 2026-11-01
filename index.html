@@ -532,6 +532,15 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica 
 .call-action{margin:10px 22px;width:calc(100% - 44px);height:48px;border:0;border-radius:24px;background:#34c759;color:#fff;font-weight:600}
 .recorder{margin:20px;padding:18px;border-radius:18px;background:#fff;text-align:center}
 .record-button{width:82px;height:82px;border:0;border-radius:50%;background:#ff3b30;color:#fff;font-size:14px}
+
+/* story-system v3 */
+html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+*{text-shadow:none!important}
+.app-icon{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
+.story-notice{margin:14px 16px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid #e5e5ea;font-size:13px;line-height:1.55}
+.story-notice b{display:block;margin-bottom:4px}
+.lock-notice{cursor:pointer}
+.event-locked{opacity:.45;filter:grayscale(1)}
 </style>
 </head>
 
@@ -587,7 +596,7 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica 
   <div class="status">
     <span>09:41</span><span>▮▮▮ 100%</span>
   </div>
-  <div class="home-title">小炊的手机</div>
+  <div class="home-title">小炊的手机</div><div id="storyNotice" class="story-notice"><b>时间异常</b><span>手机还停在 2002 年。先看看娟留下的消息。</span></div>
 
   <div class="app-grid">
     <button class="app" onclick="openApp('wechat')">
@@ -739,7 +748,7 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica 
       <span class="photo-label">重要线索</span>
     </div>
     <div class="photo" onclick="viewPhoto(this)">
-      <img src="images/酒店.jpg" alt="2002年重庆酒店"
+      <img src="images/酒店.jpg" alt="2002年重庆酒店" onclick="story.events.hotel=true;saveStory();updateStoryNotice();"
            onerror="placeholder(this,'酒店照片')">
       <span class="photo-label">富力酒店</span>
     </div>
@@ -933,6 +942,23 @@ zy：1978年生，在富力酒店工作。
 </div>
 
 <script>
+
+const STORY_KEY="man_you_xiaochui_story_v3";
+const defaultStory={read:{},events:{hotel:false,call:false,record:false,manager:false,dinner:false,ending:false}};
+let story=JSON.parse(localStorage.getItem(STORY_KEY)||"null")||defaultStory;
+function saveStory(){localStorage.setItem(STORY_KEY,JSON.stringify(story));}
+function updateStoryNotice(){
+ const el=document.getElementById("storyNotice"); if(!el)return;
+ let title="时间异常", text="手机还停在 2002 年。先看看娟留下的消息。";
+ if(story.events.ending){title="回到 2026 年";text="故事已经改变，但现实没有改变。";}
+ else if(story.events.dinner){title="最后一顿饭";text="皮皮和 zy 终于愿意单独见面了。再去看看相册。";}
+ else if(story.events.manager){title="新的线索";text="录音里提到的事情，需要问问 zy。";}
+ else if(story.events.record){title="录音已保存";text="娟留下了新的撮合计划。";}
+ else if(story.events.call){title="娟的电话";text="日历里出现了新的安排。";}
+ else if(story.events.hotel){title="富力酒店";text="地图和相册里出现了同一个地点。";}
+ el.querySelector("b").textContent=title;el.querySelector("span").textContent=text;
+}
+
 const chats={
   pipi:{
     title:"皮皮",
@@ -997,6 +1023,7 @@ const chats={
 
 let pass="";
 let playing=false;
+window.addEventListener("DOMContentLoaded",updateStoryNotice);
 
 document.getElementById("lock").onclick=function(){
   document.getElementById("lock").classList.add("hidden");
@@ -1043,6 +1070,7 @@ function hideSections(){
 
 function openApp(id){
   hideSections();
+  updateStoryNotice();
   document.getElementById(id).classList.remove("hidden");
 }
 
@@ -1061,17 +1089,15 @@ function openChat(id){
   document.getElementById("chatTitle").textContent=data.title;
   const box=document.getElementById("chatWindow");
   const key="chat_seen_"+id;
-  const seen=localStorage.getItem(key)==="1";
+  const seen=story.read[id]===true;
   box.innerHTML='<div class="chat-time">'+data.time+'</div>';
   data.lines.forEach(function(line,index){
-    function add(){
-      const bubble=document.createElement("div");
-      bubble.className="bubble "+(line[0]==="me"?"me":"");
-      bubble.textContent=line[1]; box.appendChild(bubble); box.scrollTop=box.scrollHeight;
-    }
-    if(seen){ add(); } else { setTimeout(add,index*650); }
+    function add(){const bubble=document.createElement("div");bubble.className="bubble "+(line[0]==="me"?"me":"");bubble.textContent=line[1];box.appendChild(bubble);box.scrollTop=box.scrollHeight;}
+    if(seen)add();else setTimeout(add,index*520);
   });
-  localStorage.setItem(key,"1");
+  story.read[id]=true;
+  if(id==="juan"){story.events.hotel=true;saveStory();updateStoryNotice();}
+  if(id==="manager"){story.events.manager=true;saveStory();updateStoryNotice();}
 }
 
 function viewPhoto(wrapper){
@@ -1103,15 +1129,15 @@ function toggleMusic(){
 function startCall(){
   showToast("正在呼叫娟……");
   setTimeout(function(){
+    story.events.call=true;story.events.hotel=true;saveStory();updateStoryNotice();
     showToast("娟：明天让皮皮到酒店来一趟");
-    localStorage.setItem("call_juan_done","1");
     document.getElementById("recordStatus").textContent="新录音：娟的撮合计划";
-  },1200);
+  },900);
 }
 function recordClue(){
-  localStorage.setItem("record_clue_done","1");
+  story.events.record=true;saveStory();updateStoryNotice();
   document.getElementById("recordStatus").textContent="正在录音……已保存：娟的撮合计划";
-  showToast("录音已保存");
+  showToast("录音已保存，经理的儿子线索已解锁");
 }
 </script>
 </body>
