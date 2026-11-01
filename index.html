@@ -545,6 +545,11 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Dis
 .event-locked{opacity:.45;filter:grayscale(1)}
 
 .home-indicator{position:absolute;z-index:120;left:50%;bottom:7px;width:120px;height:5px;transform:translateX(-50%);border-radius:4px;background:#111;pointer-events:none}.lock .home-indicator,.passcode .home-indicator{background:#fff}.app-header{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","PingFang SC",sans-serif;letter-spacing:0}.bubble,.chat-time,.card,.call-item,.record-item{color:#1c1c1e!important}.incoming-call{position:absolute;inset:0;z-index:110;display:flex;align-items:flex-start;justify-content:center;padding-top:85px;background:#0008}.incoming-card{width:calc(100% - 34px);padding:20px;border-radius:24px;background:#f7f7f7;box-shadow:0 15px 40px #0008;text-align:center}.incoming-card .incoming-avatar{width:64px;height:64px;margin:auto;border-radius:50%;object-fit:cover}.incoming-card h3{margin:10px 0 4px}.incoming-card p{margin:0 0 18px;color:#777;font-size:13px}.incoming-actions{display:flex;justify-content:center;gap:18px}.incoming-actions button{width:58px;height:58px;border:0;border-radius:50%;color:#fff;font-size:22px}.decline{background:#ff3b30}.accept{background:#34c759}
+
+.map-screen{position:relative;height:520px;overflow:hidden;background:#d8dfc8;background-image:linear-gradient(25deg,transparent 47%,#f4edcf 48%,#f4edcf 52%,transparent 53%),linear-gradient(-55deg,transparent 47%,#f4edcf 48%,#f4edcf 52%,transparent 53%);background-size:170px 140px}
+.map-road{position:absolute;background:#f7f0d9;box-shadow:0 0 0 2px #c8c9ae;transform:rotate(-24deg)}.road-a{width:700px;height:38px;top:210px;left:-120px}.road-b{width:650px;height:30px;top:390px;left:-100px;transform:rotate(18deg)}.map-river{position:absolute;width:150px;height:700px;right:-35px;top:-80px;background:#9ec9d0;transform:rotate(20deg);opacity:.8}
+.map-pin{position:absolute;z-index:3;border:0;background:#fff;padding:5px 8px;border-radius:12px;color:#222;box-shadow:0 2px 7px #0003;font-size:20px;text-align:left}.map-pin b{display:block;font-size:11px;white-space:nowrap}.hotel-pin{top:145px;left:68px}.shop-pin{top:320px;left:210px}.meeting-pin{top:250px;left:108px}.map-label{position:absolute;top:20px;left:18px;color:#596052;font-weight:700}.map-scale{position:absolute;right:16px;bottom:15px;color:#596052;font-size:11px}
+.incoming-actions button{position:relative;z-index:3;display:grid;place-items:center;cursor:pointer;pointer-events:auto}.incoming-card{position:relative;z-index:2}
 </style>
 </head>
 
@@ -836,17 +841,19 @@ zy：1978年生，在富力酒店工作。
 <section id="map" class="app hidden">
   <div class="app-header">
     <button class="back" onclick="goHome()">‹</button>
-    <span>地图</span><span></span>
+    <span>地图</span><span>重庆</span>
   </div>
   <div class="app-content">
-    <div class="map">
-      <span class="pin">📍</span><br>
-      富力酒店<br>
-      <span class="pin">📍</span><br>
-      皮皮的摩托车店<br>
-      <span class="pin">📍</span><br>
-      娟安排的偶遇地点
+    <div class="map-screen">
+      <div class="map-road road-a"></div><div class="map-road road-b"></div>
+      <div class="map-river"></div>
+      <button class="map-pin hotel-pin" onclick="mapClue('hotel')">📍<b>富力酒店</b></button>
+      <button class="map-pin shop-pin" onclick="mapClue('shop')">📍<b>皮皮的摩托车店</b></button>
+      <button class="map-pin meeting-pin" onclick="mapClue('meeting')">📍<b>员工后门</b></button>
+      <div class="map-label">重庆 · 2002年10月</div>
+      <div class="map-scale">—— 500米</div>
     </div>
+    <div id="mapInfo" class="card">点击地图上的地点查看线索。</div>
   </div>
 </section>
 
@@ -934,7 +941,7 @@ zy：1978年生，在富力酒店工作。
  </div>
 </section>
 
-<div id="incomingCall" class="incoming-call hidden"><div class="incoming-card"><img class="incoming-avatar" src="images/娟的头像.jpg" alt="娟"><h3>娟</h3><p>来电 · 富力酒店</p><div class="incoming-actions"><button class="decline" onclick="declineCall()">×</button><button class="accept" onclick="acceptCall()">☎</button></div></div></div>
+<div id="incomingCall" class="incoming-call hidden"><div class="incoming-card"><img class="incoming-avatar" src="images/娟的头像.jpg" alt="娟"><h3>娟</h3><p>来电 · 富力酒店</p><div class="incoming-actions"><button class="decline" onclick="event.stopPropagation();declineCall();">×</button><button class="accept" onclick="event.stopPropagation();acceptCall();">☎</button></div></div></div>
 <!-- 图片查看器 -->
 <div id="viewer" class="viewer hidden" onclick="closeViewer()">
   <button class="viewer-close">×</button>
@@ -1116,6 +1123,13 @@ function closeViewer(){
   document.getElementById("viewer").classList.add("hidden");
 }
 
+function mapClue(type){
+ const info=document.getElementById("mapInfo");
+ if(type==="hotel"){info.textContent="富力酒店：zy和娟上班的地方。皮皮明天会从后门经过。";story.events.hotel=true;}
+ if(type==="shop"){info.textContent="摩托车店：皮皮说是顺路，其实从这里到酒店要绕一大圈。";story.events.hotel=true;}
+ if(type==="meeting"){info.textContent="员工后门：娟说，明天中午把zy留在这里。";story.events.dinner=true;}
+ saveStory();updateStoryNotice();
+}
 function showToast(text){
   const toast=document.getElementById("toast");
   toast.textContent=text;
