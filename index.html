@@ -322,6 +322,7 @@ button:active{transform:scale(.95)}
   font-size:10px;
 }
 .bubble{
+  color:#1c1c1e;
   max-width:78%;
   margin:8px 0;
   padding:10px 13px;
@@ -332,6 +333,7 @@ button:active{transform:scale(.95)}
   animation:appear .3s ease;
 }
 .bubble.me{
+  color:#1c1c1e;
   margin-left:auto;
   background:#a9e88f;
 }
@@ -541,6 +543,8 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Dis
 .story-notice b{display:block;margin-bottom:4px}
 .lock-notice{cursor:pointer}
 .event-locked{opacity:.45;filter:grayscale(1)}
+
+.home-indicator{position:absolute;z-index:120;left:50%;bottom:7px;width:120px;height:5px;transform:translateX(-50%);border-radius:4px;background:#111;pointer-events:none}.lock .home-indicator,.passcode .home-indicator{background:#fff}.app-header{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","PingFang SC",sans-serif;letter-spacing:0}.bubble,.chat-time,.card,.call-item,.record-item{color:#1c1c1e!important}.incoming-call{position:absolute;inset:0;z-index:110;display:flex;align-items:flex-start;justify-content:center;padding-top:85px;background:#0008}.incoming-card{width:calc(100% - 34px);padding:20px;border-radius:24px;background:#f7f7f7;box-shadow:0 15px 40px #0008;text-align:center}.incoming-card .incoming-avatar{width:64px;height:64px;margin:auto;border-radius:50%;object-fit:cover}.incoming-card h3{margin:10px 0 4px}.incoming-card p{margin:0 0 18px;color:#777;font-size:13px}.incoming-actions{display:flex;justify-content:center;gap:18px}.incoming-actions button{width:58px;height:58px;border:0;border-radius:50%;color:#fff;font-size:22px}.decline{background:#ff3b30}.accept{background:#34c759}
 </style>
 </head>
 
@@ -548,7 +552,7 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Dis
 <div class="phone">
 <div class="screen">
 
-<div class="island"></div>
+<div class="island"></div><div class="home-indicator"></div>
 
 <!-- 锁屏 -->
 <section id="lock" class="lock">
@@ -930,6 +934,7 @@ zy：1978年生，在富力酒店工作。
  </div>
 </section>
 
+<div id="incomingCall" class="incoming-call hidden"><div class="incoming-card"><img class="incoming-avatar" src="images/娟的头像.jpg" alt="娟"><h3>娟</h3><p>来电 · 富力酒店</p><div class="incoming-actions"><button class="decline" onclick="declineCall()">×</button><button class="accept" onclick="acceptCall()">☎</button></div></div></div>
 <!-- 图片查看器 -->
 <div id="viewer" class="viewer hidden" onclick="closeViewer()">
   <button class="viewer-close">×</button>
@@ -1127,13 +1132,20 @@ function toggleMusic(){
 }
 
 function startCall(){
-  showToast("正在呼叫娟……");
-  setTimeout(function(){
-    story.events.call=true;story.events.hotel=true;saveStory();updateStoryNotice();
-    showToast("娟：明天让皮皮到酒店来一趟");
-    document.getElementById("recordStatus").textContent="新录音：娟的撮合计划";
-  },900);
+ document.getElementById("incomingCall").classList.remove("hidden");
 }
+function declineCall(){
+ document.getElementById("incomingCall").classList.add("hidden");
+ showToast("已记录：娟的未接来电");
+ story.events.call=true;saveStory();updateStoryNotice();
+}
+function acceptCall(){
+ document.getElementById("incomingCall").classList.add("hidden");
+ story.events.call=true;story.events.hotel=true;saveStory();updateStoryNotice();
+ showToast("娟：明天让皮皮到酒店来一趟");
+ const status=document.getElementById("recordStatus"); if(status)status.textContent="新录音：娟的撮合计划";
+}
+
 function recordClue(){
   story.events.record=true;saveStory();updateStoryNotice();
   document.getElementById("recordStatus").textContent="正在录音……已保存：娟的撮合计划";
